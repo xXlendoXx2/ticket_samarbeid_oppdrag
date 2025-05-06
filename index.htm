@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problemrapportering</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Rapporter et problem</h2>
+  <form>
+    <label for="navn">Navn:</label>
+    <input type="text" id="navn" name="navn" required>
+
+    <label for="email">E-post:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="problem">Velg problem:</label>
+    <select id="problem" name="problem" required>
+        <option value="">-- Velg et problem --</option>
+        <option value="IT-feil">IT-feil</option>
+        <option value="Programvarelisens">Programvarelisens</option>
+        <option value="Vedlikehold">Vedlikehold</option>
+        <option value="fakturaproblemer">fakturaproblemer</option>
+        <option value="annet">Annet</option>
+    </select>
+
+    <label for="beskrivelse">Beskrivelse av problemet:</label>
+    <textarea id="beskrivelse" name="beskrivelse" placeholder="Skriv her..."></textarea>
+
+    <button type="submit">Send inn</button>
+  </form>
+</div>
+
+</body>
+</html>
