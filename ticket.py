@@ -85,12 +85,13 @@ def oppdater_sak(sak_id):
     return redirect("/henvendelser")
 @app.route("/registrer", methods=["GET", "POST"])
 def registrer():
+    session.clear()
     if request.method == "POST":
         navn = request.form["navn"]
         email = request.form["email"]
         passord = request.form["passord"]
         rolle = "bruker"  # Standard rolle for nye brukere
-
+   
         with sqlite3.connect("database.db") as conn:
             conn.row_factory = sqlite3.Row
             # Sjekk om e-posten allerede finnes
@@ -110,6 +111,7 @@ def registrer():
     return render_template("registrer.htm")
 @app.route("/logginn", methods=["GET", "POST"])
 def logginn():
+    session.clear()
     if request.method == "POST":
         email = request.form["email"]
         passord = request.form["passord"]
