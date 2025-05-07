@@ -1,0 +1,82 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Shared container for both forms */
+  .login-container,
+  .register-container {
+    background-color: #ffffff;
+    padding: 2rem 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  /* Headers */
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Labels */
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  /* Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+  }
+  
+  /* Buttons */
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  button:hover {
+    background-color: #0069d9;
+  }
+  
+  /* Links */
+  .register-link,
+  .login-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  
+  .register-link:hover,
+  .login-link:hover {
+    text-decoration: underline;
+  }
+  

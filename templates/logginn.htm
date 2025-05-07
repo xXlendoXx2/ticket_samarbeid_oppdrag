@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logg inn</title>
+  <link rel="stylesheet" href="/static/loginn.css" />
+
 </head>
 <body>
+  <div class="login-container">
     <h2>Logg inn</h2>
-<form method="POST">
-  <label>E-post:</label>
-  <input type="email" name="email" required>
-  <br>
-  <label>Passord:</label>
-  <input type="password" name="passord" required>
-  <br>
-  <button type="submit">Logg inn</button>
-</form>
-<a href="/registrer">Har du ikke bruker?</a>
+    <form method="POST">
+      <label for="email">E-post:</label>
+      <input type="email" name="email" id="email" required />
 
+      <label for="passord">Passord:</label>
+      <input type="password" name="passord" id="passord" required />
+
+      <button type="submit">Logg inn</button>
+    </form>
+    <a class="register-link" href="/registrer">Har du ikke bruker?</a>
+  </div>
 </body>
 </html>

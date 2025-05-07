@@ -1,44 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-    </head>
-    <body>
-        <!DOCTYPE html>
-        <html lang="no">
-            <head>
-                <meta charset="UTF-8">
-                <title>Henvendelser</title>
-            </head>
-            <body>
-                <h2>Innsendte henvendelser</h2>
-                <ul>
-                    {% for sak in henvendelser %}
-                    <li>
-                      <strong>{{ sak['navn'] }}</strong> ({{ sak['email'] }}) – {{ sak['problem'] }}<br>
-                      Beskrivelse: {{ sak['beskrivelse'] }}<br>
-                      Status: {{ sak['status'] }}<br>
-                  
-                      {% if rolle == "ansatt" %}
-                      <form method="POST" action="/oppdater/{{ sak['id'] }}">
-                        <select name="status">
-                          <option {% if sak['status'] == "Oppklart" %}selected{% endif %}>Oppklart</option>
-                          <option {% if sak['status'] == "Under behandling" %}selected{% endif %}>Under behandling</option>
-                          <option {% if sak['status'] == "Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
-                        </select>
-                        <textarea name="svar" placeholder="Skriv svar...">{{ sak.get('svar', '') }}</textarea>
-                        <button type="submit">Oppdater</button>
-                      </form>
-                      {% endif %}
-                    </li>
-                    {% endfor %}
-                  </ul>  
-                  <a href="/">Lag en ny sak!</a>
-                  <a href="/loggut">Logg ut!</a>
-                
-            </body>
-        </html>
-    </body>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Innsendte henvendelser</title>
+  <link rel="stylesheet" href="/static/henvendelser.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Innsendte henvendelser</h2>
+    <ul class="henvendelser-liste">
+      {% for sak in henvendelser %}
+      <li class="henvendelse">
+        <p><strong>{{ sak['navn'] }}</strong> (<a href="mailto:{{ sak['email'] }}">{{ sak['email'] }}</a>)</p>
+        <p><strong>Problem:</strong> {{ sak['problem'] }}</p>
+        <p><strong>Beskrivelse:</strong> {{ sak['beskrivelse'] }}</p>
+        <p><strong>Status:</strong> {{ sak['status'] }}</p>
+
+        {% if rolle == "ansatt" %}
+        <form method="POST" action="/oppdater/{{ sak['id'] }}" class="status-form">
+          <label for="status">Endre status:</label>
+          <select name="status">
+            <option {% if sak['status'] == "Oppklart" %}selected{% endif %}>Oppklart</option>
+            <option {% if sak['status'] == "Under behandling" %}selected{% endif %}>Under behandling</option>
+            <option {% if sak['status'] == "Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
+          </select>
+          <textarea name="svar" placeholder="Skriv svar...">{{ sak.get('svar', '') }}</textarea>
+          <button type="submit">Oppdater</button>
+        </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="linker">
+      <a href="/">Lag en ny sak!</a>
+      <a href="/loggut">Logg ut</a>
+    </div>
+  </div>
+</body>
 </html>
