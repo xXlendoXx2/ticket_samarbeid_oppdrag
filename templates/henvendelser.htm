@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    heihei
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <!DOCTYPE html>
+        <html lang="no">
+            <head>
+                <meta charset="UTF-8">
+                <title>Henvendelser</title>
+            </head>
+            <body>
+                <h2>Innsendte henvendelser</h2>
+                <ul>
+                    {% for sak in henvendelser %}
+                    <li>
+                      <strong>{{ sak['navn'] }}</strong> ({{ sak['email'] }}) – {{ sak['problem'] }}<br>
+                      Beskrivelse: {{ sak['beskrivelse'] }}<br>
+                      Status: {{ sak['status'] }}<br>
+                  
+                      {% if rolle == "ansatt" %}
+                      <form method="POST" action="/oppdater/{{ sak['id'] }}">
+                        <select name="status">
+                          <option {% if sak['status'] == "Oppklart" %}selected{% endif %}>Oppklart</option>
+                          <option {% if sak['status'] == "Under behandling" %}selected{% endif %}>Under behandling</option>
+                          <option {% if sak['status'] == "Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
+                        </select>
+                        <textarea name="svar" placeholder="Skriv svar...">{{ sak.get('svar', '') }}</textarea>
+                        <button type="submit">Oppdater</button>
+                      </form>
+                      {% endif %}
+                    </li>
+                    {% endfor %}
+                  </ul>  
+                  <a href="/loggut">Logg ut!</a>
+                
+            </body>
+        </html>
+    </body>
 </html>

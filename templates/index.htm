@@ -8,14 +8,15 @@
 </head>
 <body>
 
+
 <div class="container">
   <h2>Rapporter et problem</h2>
-  <form>
+  <form method="POST" action="/">
     <label for="navn">Navn:</label>
-    <input type="text" id="navn" name="navn" required>
+    <input type="text" id="navn" name="navn" value="{{ navn }}" readonly required>
 
     <label for="email">E-post:</label>
-    <input type="email" id="email" name="email" required>
+    <input type="email" id="email" name="email" value="{{ email }}" readonly required>
 
     <label for="problem">Velg problem:</label>
     <select id="problem" name="problem" required>
@@ -30,8 +31,10 @@
     <label for="beskrivelse">Beskrivelse av problemet:</label>
     <textarea id="beskrivelse" name="beskrivelse" placeholder="Skriv her..."></textarea>
 
-   <button type="submit">Send inn</button>
-  </form>
+    <button type="submit">Send inn</button>
+</form>
+<a href="/henvendelser">Se dine henvendelser!</a>
+<a href="/loggut">logg ut!</a>
 </div>
 
 </body>
