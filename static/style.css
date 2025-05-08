@@ -1,57 +1,154 @@
+/* ======= GLOBAL STYLES ======= */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    padding: 15px;
-    overflow-y: hidden;
-  }
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
 
-  .container {
-    background-color: white;
-    max-width: 500px;
-    margin: auto;
-    padding: 10px;
-    border-radius: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
+/* ======= CONTAINERS ======= */
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+.form-container {
+  background-color: white;
+  max-width: 500px;
+  margin: auto;
+  padding: 15px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-  label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
-  }
+/* ======= HEADERS ======= */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
 
-  input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-  }
+/* ======= FORMS: LABELS, INPUTS, SELECTS, TEXTAREAS ======= */
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
 
-  textarea {
-    height: 100px;
-    resize: vertical;
-  }
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
 
-  button {
-    margin-top: 20px;
-    width: 100%;
-    padding: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-  }
+textarea {
+  height: 100px;
+  resize: vertical;
+}
 
-  button:hover {
-    background-color: #007BFF;
-  }
-  
+/* ======= BUTTONS ======= */
+button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0069d9;
+}
+
+/* ======= LINKS ======= */
+.register-link,
+.login-link,
+.linker a {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  color: #007BFF;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: bold;
+}
+
+.register-link:hover,
+.login-link:hover,
+.linker a:hover {
+  text-decoration: underline;
+}
+
+/* ======= HENVENDELSER LISTE ======= */
+.henvendelser-liste {
+  list-style-type: none;
+  padding: 0;
+}
+
+.henvendelse {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.henvendelse p {
+  margin: 0.4rem 0;
+}
+
+/* ======= STATUS-FORM FOR ANSATTE ======= */
+.status-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.status-form select,
+.status-form textarea,
+.status-form button {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.status-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.status-form button {
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+/* ======= FLEX LAYOUT FOR LINKS ======= */
+.linker {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+/* ======= AUTH PAGE CENTERING ======= */
+body:has(.login-container),
+body:has(.register-container),
+body:has(.form-container) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

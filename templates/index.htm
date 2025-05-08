@@ -9,7 +9,7 @@
 <body>
 
 
-<div class="container">
+<div class="form-container">
   <h2>Rapporter et problem</h2>
   <form method="POST" action="/">
     <label for="navn">Navn:</label>
@@ -29,12 +29,13 @@
     </select>
 
     <label for="beskrivelse">Beskrivelse av problemet:</label>
-    <textarea id="beskrivelse" name="beskrivelse" placeholder="Skriv her..."></textarea>
+    <textarea id="beskrivelse" name="beskrivelse" placeholder="Skriv her" style="font-style: italic;"></textarea>
 
     <button type="submit">Send inn</button>
 </form>
-<a href="/henvendelser">Se dine henvendelser!</a>
-<a href="/loggut">logg ut!</a>
+<div class="linker">
+<a class="login-link" href="/henvendelser">Se dine henvendelser!</a>
+<a class="login-link" href="/loggut">logg ut!</a>
 </div>
 
 </body>

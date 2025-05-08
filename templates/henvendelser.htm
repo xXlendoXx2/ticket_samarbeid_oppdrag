@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Innsendte henvendelser</title>
-  <link rel="stylesheet" href="/static/henvendelser.css" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <div class="container">
@@ -16,6 +16,8 @@
         <p><strong>Problem:</strong> {{ sak['problem'] }}</p>
         <p><strong>Beskrivelse:</strong> {{ sak['beskrivelse'] }}</p>
         <p><strong>Status:</strong> {{ sak['status'] }}</p>
+        <p><strong>Svar:</strong> {{ sak['svar'] }}</p>
+
 
         {% if rolle == "ansatt" %}
         <form method="POST" action="/oppdater/{{ sak['id'] }}" class="status-form">
@@ -25,7 +27,6 @@
             <option {% if sak['status'] == "Under behandling" %}selected{% endif %}>Under behandling</option>
             <option {% if sak['status'] == "Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
           </select>
-          <textarea name="svar" placeholder="Skriv svar...">{{ sak.get('svar', '') }}</textarea>
           <button type="submit">Oppdater</button>
         </form>
         {% endif %}

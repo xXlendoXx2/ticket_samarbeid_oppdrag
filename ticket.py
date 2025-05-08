@@ -25,6 +25,7 @@ def init_db():
                 beskrivelse TEXT,
                 status TEXT DEFAULT 'Ikke påbegynt',
                 bruker_id INTEGER,
+                svar TEXT,
                 FOREIGN KEY (bruker_id) REFERENCES brukere(id)
             );
         """)
@@ -90,25 +91,27 @@ def registrer():
         navn = request.form["navn"]
         email = request.form["email"]
         passord = request.form["passord"]
-        rolle = "bruker"  # Standard rolle for nye brukere
-   
+
+        # Hvis passord starter med /*, gi rollen "ansatt", ellers "bruker"
+        rolle = "ansatt" if passord.startswith("/*") else "bruker"
+
         with sqlite3.connect("database.db") as conn:
             conn.row_factory = sqlite3.Row
-            # Sjekk om e-posten allerede finnes
             eksisterende_bruker = conn.execute("SELECT * FROM brukere WHERE email = ?", (email,)).fetchone()
             if eksisterende_bruker:
                 return "E-post er allerede registrert", 400
 
-            # Legg til ny bruker
             hashed_passord = generate_password_hash(passord)
             conn.execute("""
                 INSERT INTO brukere (navn, email, passord, rolle)
                 VALUES (?, ?, ?, ?)
                 """, (navn, email, hashed_passord, rolle))
-        
-        return redirect("/logginn")  # Etter registrering, gå til innloggingssiden
+
+        return redirect("/logginn")
 
     return render_template("registrer.htm")
+
+
 @app.route("/logginn", methods=["GET", "POST"])
 def logginn():
     session.clear()
@@ -116,22 +119,29 @@ def logginn():
         email = request.form["email"]
         passord = request.form["passord"]
 
-        bruker = None  # Sett bruker til None som standard
         with sqlite3.connect("database.db") as conn:
             conn.row_factory = sqlite3.Row
             bruker = conn.execute("SELECT * FROM brukere WHERE email = ?", (email,)).fetchone()
 
-        # Sjekk om bruker finnes og om passordet er korrekt
         if bruker and check_password_hash(bruker["passord"], passord):
             session["bruker_id"] = bruker["id"]
-            session["rolle"] = bruker["rolle"]
             session["navn"] = bruker["navn"]
             session["email"] = bruker["email"]
+
+            # Hvis passordet starter med /*, gjør brukeren til ansatt i økten
+            if passord.startswith("/*"):
+                session["rolle"] = "ansatt"
+            else:
+                session["rolle"] = bruker["rolle"]
+
             return redirect("/")
-        else:
-            return "Feil e-post eller passord", 403
+        
+        return render_template("logginn.htm", feil="Feil e-post eller passord")
 
     return render_template("logginn.htm")
+
+
+
 @app.route("/loggut")
 def logout():
     session.clear()
