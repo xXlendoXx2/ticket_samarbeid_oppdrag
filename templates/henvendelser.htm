@@ -1,14 +1,37 @@
 <!DOCTYPE html>
 <html lang="no">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Innsendte henvendelser</title>
   <link rel="stylesheet" href="/static/style.css" />
 </head>
+
 <body>
   <div class="container">
     <h2>Innsendte henvendelser</h2>
+
+    <div class="filter-sortering">
+      <label for="status-filter">Filtrer etter status:</label>
+      <select id="status-filter">
+        <option value="alle">Alle</option>
+        <option value="Oppklart">Oppklart</option>
+        <option value="Under behandling">Under behandling</option>
+        <option value="Ikke påbegynt">Ikke påbegynt</option>
+      </select>
+
+      <label for="problem-filter">Filtrer etter problem:</label>
+      <select id="problem-filter">
+        <option value="alle">Alle</option>
+        <option value="IT-feil">IT-feil</option>
+        <option value="Programvarelisens">Programvarelisens</option>
+        <option value="Vedlikehold">Vedlikehold</option>
+        <option value="fakturaproblemer">fakturaproblemer</option>
+        <option value="annet">annet</option>
+      </select>
+    </div>
+
     <ul class="henvendelser-liste">
       {% for sak in henvendelser %}
       <li class="henvendelse">
@@ -23,10 +46,11 @@
         <form method="POST" action="/oppdater/{{ sak['id'] }}" class="status-form">
           <label for="status">Endre status:</label>
           <select name="status">
-            <option {% if sak['status'] == "Oppklart" %}selected{% endif %}>Oppklart</option>
-            <option {% if sak['status'] == "Under behandling" %}selected{% endif %}>Under behandling</option>
-            <option {% if sak['status'] == "Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
+            <option {% if sak['status']=="Oppklart" %}selected{% endif %}>Oppklart</option>
+            <option {% if sak['status']=="Under behandling" %}selected{% endif %}>Under behandling</option>
+            <option {% if sak['status']=="Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
           </select>
+          <textarea name="svar">{{ sak['svar']}}</textarea>
           <button type="submit">Oppdater</button>
         </form>
         {% endif %}
@@ -39,5 +63,6 @@
       <a href="/loggut">Logg ut</a>
     </div>
   </div>
+<script src="/static/script.js"></script>
 </body>
 </html>
