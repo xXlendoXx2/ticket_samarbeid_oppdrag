@@ -29,14 +29,23 @@
     </select>
 
     <label for="beskrivelse">Beskrivelse av problemet:</label>
-    <textarea id="beskrivelse" name="beskrivelse" placeholder="Skriv her" style="font-style: italic;"></textarea>
+    <textarea id="beskrivelse" name="beskrivelse" placeholder="Skriv her"></textarea>
 
     <button type="submit">Send inn</button>
 </form>
-<div class="linker">
-<a class="login-link" href="/henvendelser">Se dine henvendelser!</a>
-<a class="login-link" href="/loggut">logg ut!</a>
-</div>
 
+{% if rolle == "bruker" %}
+  <div class="linker">
+    <a class="login-link" href="/henvendelser">Se dine henvendelser!</a>
+    <a class="login-link" href="/loggut">Logg ut!</a>
+  </div>
+    {% endif %}
+{% if rolle == "ansatt" %}
+  <div class="linker">
+    <a class="login-link" href="/henvendelser">Se alle henvendelser!</a>
+    <a class="login-link" href="/loggut">Logg ut!</a>
+  </div>
+{% endif %}
+</div>
 </body>
 </html>

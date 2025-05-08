@@ -17,7 +17,7 @@ def init_db():
             );
         """)
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS henvendelser (
+            CREATE TABLE IF NOT EXISTS ny_henvendelser (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 navn TEXT NOT NULL,
                 email TEXT NOT NULL,
@@ -25,10 +25,13 @@ def init_db():
                 beskrivelse TEXT,
                 status TEXT DEFAULT 'Ikke påbegynt',
                 bruker_id INTEGER,
-                svar TEXT,
+                ansatt_svar TEXT,
+                bruker_svar TEXT,
                 FOREIGN KEY (bruker_id) REFERENCES brukere(id)
             );
         """)
+        
+            
     
 
 @app.route("/", methods=["GET", "POST"])
@@ -45,13 +48,28 @@ def home():
 
         with sqlite3.connect("database.db") as conn:
             conn.execute("""
-                INSERT INTO henvendelser (navn, email, problem, beskrivelse, bruker_id)
+                INSERT INTO ny_henvendelser (navn, email, problem, beskrivelse, bruker_id)
                 VALUES (?, ?, ?, ?, ?)
             """, (navn, email, problem, beskrivelse, bruker_id))
         
         return redirect("/henvendelser")
 
-    return render_template("index.htm", navn=session.get("navn"), email=session.get("email"))
+    rolle = session.get("rolle")
+    bruker_id = session.get("bruker_id")
+
+    with sqlite3.connect("database.db") as conn:
+        conn.row_factory = sqlite3.Row
+        if rolle == "ansatt":
+            henvendelser = conn.execute("SELECT * FROM ny_henvendelser").fetchall()
+        else:
+            henvendelser = conn.execute("SELECT * FROM ny_henvendelser WHERE bruker_id = ?", (bruker_id,)).fetchall()
+
+    return render_template("index.htm",
+                           navn=session.get("navn"),
+                           email=session.get("email"),
+                           rolle=rolle,
+                           ny_henvendelser=henvendelser)
+
 
 
 
@@ -59,29 +77,41 @@ def home():
 def henvendelser():
     if "bruker_id" not in session:
         return redirect("/logginn")
-
+    
     bruker_id = session.get("bruker_id")
     rolle = session.get("rolle")
 
     with sqlite3.connect("database.db") as conn:
         conn.row_factory = sqlite3.Row
         if rolle == "ansatt":
-            rows = conn.execute("SELECT * FROM henvendelser").fetchall()
+            rows = conn.execute("SELECT * FROM ny_henvendelser").fetchall()
         else:
-            rows = conn.execute("SELECT * FROM henvendelser WHERE bruker_id = ?", (bruker_id,)).fetchall()
-    return render_template("henvendelser.htm", henvendelser=rows, rolle=rolle)
+            rows = conn.execute("SELECT * FROM ny_henvendelser WHERE bruker_id = ?", (bruker_id,)).fetchall()
+    return render_template("henvendelser.htm", ny_henvendelser=rows, rolle=rolle)
 
-
+# En rute kun for ansatte
 @app.route("/oppdater/<int:sak_id>", methods=["POST"])
 def oppdater_sak(sak_id):
     if session.get("rolle") != "ansatt":
         return "Ikke autorisert", 403
 
     status = request.form["status"]
-    svar = request.form["svar"]
+    ansatt_svar = request.form["ansatt_svar"]
 
     with sqlite3.connect("database.db") as conn:
-        conn.execute("UPDATE henvendelser SET status = ?, svar = ? WHERE id = ?", (status, svar, sak_id))
+        conn.execute("UPDATE ny_henvendelser SET status = ?, ansatt_svar = ? WHERE id = ?", (status, ansatt_svar, sak_id))
+    
+    return redirect("/henvendelser")
+# En rute kun for brukere
+@app.route("/svarbruker/<int:sak_id>", methods=["POST"])
+def svarbruker(sak_id):
+    if session.get("rolle") != "bruker":
+        return "Ikke autorisert", 403
+
+    bruker_svar = request.form["bruker_svar"]
+
+    with sqlite3.connect("database.db") as conn:
+        conn.execute("UPDATE ny_henvendelser SET bruker_svar = ? WHERE id = ?", (bruker_svar, sak_id))
     
     return redirect("/henvendelser")
 @app.route("/registrer", methods=["GET", "POST"])
@@ -149,4 +179,4 @@ def logout():
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port="")

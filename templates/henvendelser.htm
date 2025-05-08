@@ -33,16 +33,22 @@
     </div>
 
     <ul class="henvendelser-liste">
-      {% for sak in henvendelser %}
+      {% for sak in ny_henvendelser %}
       <li class="henvendelse">
         <p><strong>Saksnummer:</strong> {{ sak['id'] }}</p>
         <p><strong>{{ sak['navn'] }}</strong> (<a href="mailto:{{ sak['email'] }}">{{ sak['email'] }}</a>)</p>
         <p><strong>Problem:</strong> {{ sak['problem'] }}</p>
         <p><strong>Beskrivelse:</strong> {{ sak['beskrivelse'] }}</p>
         <p><strong>Status:</strong> {{ sak['status'] }}</p>
-        <p><strong>Svar:</strong> {{ sak['svar'] }}</p>
-
-
+        <p><strong>Ansatt svar:</strong> {{ sak['ansatt_svar'] }}</p>
+        <p><strong>Bruker svar:</strong> {{ sak['bruker_svar'] }}</p>
+        {% if rolle == "bruker" %}
+        <form method="POST" action="/svarbruker/{{ sak['id'] }}">
+          <label for="bruker_svar">Skriv svar til den ansatte:</label>
+          <textarea name="bruker_svar">{{ sak['bruker_svar'] }}</textarea>
+          <button type="submit">Send</button>
+        </form>
+        {% endif %}
         {% if rolle == "ansatt" %}
         <form method="POST" action="/oppdater/{{ sak['id'] }}" class="status-form">
           <label for="status">Endre status:</label>
@@ -51,19 +57,35 @@
             <option {% if sak['status']=="Under behandling" %}selected{% endif %}>Under behandling</option>
             <option {% if sak['status']=="Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
           </select>
-          <textarea name="svar">{{ sak['svar']}}</textarea>
+          <label for="ansatt_svar">Skriv svar til brukeren:</label>
+          <textarea name="ansatt_svar">{{ sak['ansatt_svar']}}</textarea>
           <button type="submit">Oppdater</button>
         </form>
         {% endif %}
       </li>
       {% endfor %}
     </ul>
+    
 
     <div class="linker">
       <a href="/">Lag en ny sak!</a>
       <a href="/loggut">Logg ut</a>
     </div>
   </div>
+  {% if rolle == 'bruker' %}
+<script>
+    setInterval(function () {
+        window.location.reload(ansatt_svar);
+    }, 20000);
+</script>
+{% endif %}
+  {% if rolle == 'ansatt' %}
+<script>
+    setInterval(function () {
+        window.location.reload();
+    }, 20000);
+</script>
+{% endif %}
 <script src="/static/script.js"></script>
 </body>
 </html>
