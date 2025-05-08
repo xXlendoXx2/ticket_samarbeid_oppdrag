@@ -35,6 +35,7 @@
     <ul class="henvendelser-liste">
       {% for sak in henvendelser %}
       <li class="henvendelse">
+        <p><strong>Saksnummer:</strong> {{ sak['id'] }}</p>
         <p><strong>{{ sak['navn'] }}</strong> (<a href="mailto:{{ sak['email'] }}">{{ sak['email'] }}</a>)</p>
         <p><strong>Problem:</strong> {{ sak['problem'] }}</p>
         <p><strong>Beskrivelse:</strong> {{ sak['beskrivelse'] }}</p>
