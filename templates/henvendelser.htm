@@ -1,91 +1,112 @@
 <!DOCTYPE html>
 <html lang="no">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Innsendte henvendelser</title>
-  <link rel="stylesheet" href="/static/style.css" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Innsendte henvendelser</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
 
-<body>
-  <div class="container">
-    <h2>Innsendte henvendelser</h2>
+  <body>
+    <div class="container">
+      <h2>Innsendte henvendelser</h2>
 
-    <div class="filter-sortering">
-      <label for="status-filter">Filtrer etter status:</label>
-      <select id="status-filter">
-        <option value="alle">Alle</option>
-        <option value="Oppklart">Oppklart</option>
-        <option value="Under behandling">Under behandling</option>
-        <option value="Ikke påbegynt">Ikke påbegynt</option>
-      </select>
+      <div class="filter-sortering">
+        <label for="status-filter">Filtrer etter status:</label>
+        <select id="status-filter">
+          <option value="alle">Alle</option>
+          <option value="Ferdigstilt">Ferdigstilt</option>
+          <option value="Under behandling">Under behandling</option>
+          <option value="Ikke påbegynt">Ikke påbegynt</option>
+        </select>
 
-      <label for="problem-filter">Filtrer etter problem:</label>
-      <select id="problem-filter">
-        <option value="alle">Alle</option>
-        <option value="IT-feil">IT-feil</option>
-        <option value="Programvarelisens">Programvarelisens</option>
-        <option value="Vedlikehold">Vedlikehold</option>
-        <option value="fakturaproblemer">fakturaproblemer</option>
-        <option value="annet">annet</option>
-      </select>
-    </div>
+        <label for="problem-filter">Filtrer etter problem:</label>
+        <select id="problem-filter">
+          <option value="alle">Alle</option>
+          <option value="IT-feil">IT-feil</option>
+          <option value="Programvarelisens">Programvarelisens</option>
+          <option value="Vedlikehold">Vedlikehold</option>
+          <option value="fakturaproblemer">fakturaproblemer</option>
+          <option value="annet">annet</option>
+        </select>
+      </div>
 
-    <ul class="henvendelser-liste">
-      {% for sak in ny_henvendelser %}
-      <li class="henvendelse">
-        <p><strong>Saksnummer:</strong> {{ sak['id'] }}</p>
-        <p><strong>{{ sak['navn'] }}</strong> (<a href="mailto:{{ sak['email'] }}">{{ sak['email'] }}</a>)</p>
-        <p><strong>Problem:</strong> {{ sak['problem'] }}</p>
-        <p><strong>Beskrivelse:</strong> {{ sak['beskrivelse'] }}</p>
-        <p><strong>Status:</strong> {{ sak['status'] }}</p>
-        <p><strong>Ansatt svar:</strong> {{ sak['ansatt_svar'] }}</p>
-        <p><strong>Bruker svar:</strong> {{ sak['bruker_svar'] }}</p>
-        {% if rolle == "bruker" %}
-        <form method="POST" action="/svarbruker/{{ sak['id'] }}">
-          <label for="bruker_svar">Skriv svar til den ansatte:</label>
-          <textarea name="bruker_svar">{{ sak['bruker_svar'] }}</textarea>
-          <button type="submit">Send</button>
-        </form>
-        {% endif %}
+      <ul class="henvendelser-liste">
+        {% for sak in ny_henvendelser %}
+        <li class="henvendelse">
+          <p><strong>Saksnummer:</strong> {{ sak['id'] }}</p>
+          <p><strong>{{ sak['navn'] }}</strong> (<a
+              href="mailto:{{ sak['email'] }}">{{ sak['email'] }}</a>)</p>
+          <p><strong>Problem:</strong> {{ sak['problem'] }}</p>
+          <p><strong>Beskrivelse:</strong> {{ sak['beskrivelse'] }}</p>
+          <p><strong>Status:</strong> {{ sak['status'] }}</p>
+          <p><strong>Ansatt svar:</strong> {{ sak['ansatt_svar'] }}</p>
+          <p><strong>Bruker svar:</strong> {{ sak['bruker_svar'] }}</p>
+          {% if rolle == "bruker" %}
+          <form method="POST" action="/svarbruker/{{ sak['id'] }}">
+            <label for="bruker_svar">Skriv svar til den ansatte:</label>
+            <textarea name="bruker_svar">{{ sak['bruker_svar'] }}</textarea>
+            <button type="submit">Send</button>
+          </form>
+          {% endif %}
+          {% if rolle == "ansatt" %}
+          <form method="POST" action="/oppdater/{{ sak['id'] }}"
+            class="status-form">
+            <label for="status">Endre status:</label>
+            <select name="status">
+              <option {% if sak['status']=="Ferdigstilt" %}selected{% endif
+                %}>Ferdigstilt</option>
+              <option {% if sak['status']=="Under behandling" %}selected{% endif
+                %}>Under behandling</option>
+              <option {% if sak['status']=="Ikke påbegynt" %}selected{% endif
+                %}>Ikke påbegynt</option>
+            </select>
+            <label for="ansatt_svar">Skriv svar til brukeren:</label>
+            <textarea name="ansatt_svar">{{ sak['ansatt_svar']}}</textarea>
+            <button type="submit">Oppdater</button>
+          </form>
+          {% endif %}
+          {% if rolle == "ansatt" %}
+          <form method="POST" action="/lukk_henvendelse/{{ sak['id'] }}"
+            onsubmit="return confirm('Er du sikker på at du vil lukke denne henvendelsen?');">
+            <button type="submit">Lukk sak</button>
+          </form>
+          {% endif %}
+          {% if sak['lukket'] == 1 and rolle == "ansatt" %}
+          <form method="POST" action="/gjenapne_henvendelse/{{ sak['id'] }}"
+            onsubmit="return confirm('Vil du gjenåpne denne henvendelsen?');">
+            <button type="submit">Gjenåpne sak</button>
+          </form>
+          {% endif %}
+          {% endfor %}
+
+        </li>
+      </ul>
+
+      <div class="linker">
+        <a href="/">Lag en ny sak!</a>
         {% if rolle == "ansatt" %}
-        <form method="POST" action="/oppdater/{{ sak['id'] }}" class="status-form">
-          <label for="status">Endre status:</label>
-          <select name="status">
-            <option {% if sak['status']=="Oppklart" %}selected{% endif %}>Oppklart</option>
-            <option {% if sak['status']=="Under behandling" %}selected{% endif %}>Under behandling</option>
-            <option {% if sak['status']=="Ikke påbegynt" %}selected{% endif %}>Ikke påbegynt</option>
-          </select>
-          <label for="ansatt_svar">Skriv svar til brukeren:</label>
-          <textarea name="ansatt_svar">{{ sak['ansatt_svar']}}</textarea>
-          <button type="submit">Oppdater</button>
-        </form>
+        <a class="login-link" href="/rediger_brukere">Se alle brukere!</a>
         {% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-    
-
-    <div class="linker">
-      <a href="/">Lag en ny sak!</a>
-      <a href="/loggut">Logg ut</a>
+        <a href="/loggut">Logg ut</a>
+      </div>
     </div>
-  </div>
-  {% if rolle == 'bruker' %}
-<script>
+    {% if rolle == 'bruker' %}
+    <script>
     setInterval(function () {
-        window.location.reload(ansatt_svar);
+      window.location.reload();
     }, 20000);
 </script>
-{% endif %}
-  {% if rolle == 'ansatt' %}
-<script>
+    {% endif %}
+    {% if rolle == 'ansatt' %}
+    <script>
     setInterval(function () {
         window.location.reload();
     }, 20000);
 </script>
-{% endif %}
-<script src="/static/script.js"></script>
-</body>
+
+    {% endif %}
+    <script src="/static/script.js"></script>
+  </body>
 </html>
