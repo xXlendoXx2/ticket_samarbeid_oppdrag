@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brukeradministrasjon</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Brukeradministrasjon</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Email</th>
+                <th>Rolle</th>
+                <th>Status</th>
+                <th>Handling</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bruker in brukere %}
+            <tr>
+                <td>{{ bruker.navn }}</td>
+                <td>{{ bruker.email }}</td>
+                <td>{{ bruker.rolle }}</td>
+                <td class="{{ 'aktiv' if bruker.aktiv else 'inaktiv' }}">
+                    {{ 'Aktiv' if bruker.aktiv else 'Inaktiv' }}
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin_brukere') }}">
+                        <input type="hidden" name="bruker_id" value="{{ bruker.id }}">
+                        <button type="submit" name="handling" value="{{ 'deaktiver' if bruker.aktiv else 'aktiver' }}">
+                            {{ 'Deaktiver' if bruker.aktiv else 'Aktiver' }}
+                        </button>
+                        <button type="submit" name="handling" value="slett" onclick="return confirm('Er du sikker på at du vil slette denne brukeren?');">
+                            Slett
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="linker">
+        <a class="login-link" href="/henvendelser">Se alle henvendelser!</a>
+        <a class="login-link" href="/loggut">Logg ut!</a>
+      </div>
+</body>
+</html>
