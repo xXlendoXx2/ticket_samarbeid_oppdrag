@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "123"  # endre denne
 # Opprett database-tabellen om den ikke finnes
+#1 er aktiv, 0 er inaktiv
+# Rolle kan være "bruker" eller "ansatt"
+
 def init_db():
     with sqlite3.connect("database.db") as conn:
         conn.execute("""
@@ -13,6 +16,7 @@ def init_db():
                 navn TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 passord TEXT NOT NULL,
+                aktiv INTEGER DEFAULT 1, 
                 rolle TEXT NOT NULL CHECK(rolle IN ('bruker', 'ansatt'))
             );
         """)
@@ -64,14 +68,7 @@ def home():
         else:
             henvendelser = conn.execute("SELECT * FROM ny_henvendelser WHERE bruker_id = ?", (bruker_id,)).fetchall()
 
-    return render_template("index.htm",
-                           navn=session.get("navn"),
-                           email=session.get("email"),
-                           rolle=rolle,
-                           ny_henvendelser=henvendelser)
-
-
-
+    return render_template("index.htm", navn=session.get("navn"), email=session.get("email"), rolle=rolle, ny_henvendelser=henvendelser)
 
 @app.route("/henvendelser")
 def henvendelser():
@@ -83,17 +80,42 @@ def henvendelser():
 
     with sqlite3.connect("database.db") as conn:
         conn.row_factory = sqlite3.Row
+        conn.execute("""
+            DELETE FROM ny_henvendelser
+            WHERE bruker_id NOT IN (SELECT id FROM brukere)
+        """)
+        conn.commit()
+
         if rolle == "ansatt":
-            rows = conn.execute("SELECT * FROM ny_henvendelser").fetchall()
+            rows = conn.execute("SELECT * FROM ny_henvendelser WHERE lukket = 0").fetchall()
         else:
             rows = conn.execute("SELECT * FROM ny_henvendelser WHERE bruker_id = ?", (bruker_id,)).fetchall()
+
     return render_template("henvendelser.htm", ny_henvendelser=rows, rolle=rolle)
+
+@app.route("/lukk_henvendelse/<int:sak_id>", methods=["POST"])
+def lukk_henvendelse(sak_id):
+    if session.get("rolle") != "ansatt":
+        return "Ikke autorisert", 403
+    if "bruker_id" not in session:
+        return redirect("/logginn")
+
+    with sqlite3.connect("database.db") as conn:
+        conn.execute("""
+            UPDATE ny_henvendelser SET status = 'Lukket', lukket = 1 WHERE id = ?
+        """, (sak_id,))
+        conn.commit()
+
+    return redirect("/henvendelser")
+
 
 # En rute kun for ansatte
 @app.route("/oppdater/<int:sak_id>", methods=["POST"])
 def oppdater_sak(sak_id):
     if session.get("rolle") != "ansatt":
         return "Ikke autorisert", 403
+    if "bruker_id" not in session:
+        return redirect("/logginn")
 
     status = request.form["status"]
     ansatt_svar = request.form["ansatt_svar"]
@@ -107,6 +129,8 @@ def oppdater_sak(sak_id):
 def svarbruker(sak_id):
     if session.get("rolle") != "bruker":
         return "Ikke autorisert", 403
+    if "bruker_id" not in session:
+        return redirect("/logginn")
 
     bruker_svar = request.form["bruker_svar"]
 
@@ -145,6 +169,7 @@ def registrer():
 @app.route("/logginn", methods=["GET", "POST"])
 def logginn():
     session.clear()
+    
     if request.method == "POST":
         email = request.form["email"]
         passord = request.form["passord"]
@@ -152,23 +177,54 @@ def logginn():
         with sqlite3.connect("database.db") as conn:
             conn.row_factory = sqlite3.Row
             bruker = conn.execute("SELECT * FROM brukere WHERE email = ?", (email,)).fetchone()
-
+                
         if bruker and check_password_hash(bruker["passord"], passord):
-            session["bruker_id"] = bruker["id"]
-            session["navn"] = bruker["navn"]
-            session["email"] = bruker["email"]
-
-            # Hvis passordet starter med /*, gjør brukeren til ansatt i økten
-            if passord.startswith("/*"):
-                session["rolle"] = "ansatt"
-            else:
+            if bruker["aktiv"] == 1:
+                session["bruker_id"] = bruker["id"]
+                session["navn"] = bruker["navn"]
+                session["email"] = bruker["email"]
                 session["rolle"] = bruker["rolle"]
-
-            return redirect("/")
-        
-        return render_template("logginn.htm", feil="Feil e-post eller passord")
+                if session["rolle"] == "ansatt":
+                    return redirect("/henvendelser")
+                elif session["rolle"] == "bruker":
+                    return redirect("/")
+                return redirect("/") 
+            else:
+                return render_template("logginn.htm", feil="Kontoen din er deaktivert.")
+        else:
+            return render_template("logginn.htm", feil="Feil e-post eller passord.")
 
     return render_template("logginn.htm")
+
+
+@app.route("/rediger_brukere", methods=["GET", "POST"])
+def admin_brukere():
+    if session.get("rolle") != "ansatt":
+        return "Ikke autorisert", 403
+    if "bruker_id" not in session:
+        return redirect("/logginn")
+
+    with sqlite3.connect("database.db") as conn:
+        conn.row_factory = sqlite3.Row
+        if request.method == "POST":
+            bruker_id = request.form.get("bruker_id")
+            handling = request.form.get("handling")
+            if bruker_id and handling:
+                if handling == "slett":
+                    conn.execute("DELETE FROM brukere WHERE id = ?", (bruker_id,))
+                    conn.execute("DELETE FROM ny_henvendelser WHERE bruker_id = ?", (bruker_id,))
+                    # Obs: Dette fjerner brukeren og henvendelser knyttet til brukeren
+                else:
+                    ny_status = 1 if handling == "aktiver" else 0
+                    conn.execute("UPDATE brukere SET aktiv = ? WHERE id = ?", (ny_status, bruker_id))
+                conn.commit()
+
+        brukere = conn.execute("SELECT * FROM brukere").fetchall()
+
+    return render_template("rediger_brukere.htm", brukere=brukere)
+
+
+    
 
 
 
@@ -179,4 +235,4 @@ def logout():
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, host='0.0.0.0', port="")
+    app.run(debug=True, host='0.0.0.0')
