@@ -88,6 +88,8 @@ button:hover {
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: bold;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .register-link:hover,
@@ -141,8 +143,9 @@ button:hover {
 /* ======= FLEX LAYOUT FOR LINKS ======= */
 .linker {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 2rem;
+  gap: 20px;
 }
 
 /* ======= AUTH PAGE CENTERING ======= */
